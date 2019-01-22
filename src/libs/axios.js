@@ -4,10 +4,9 @@ import { router } from '../router/index';
 import { Message } from 'iview';
 import Cookies from 'js-cookie';
 // 统一请求路径前缀
-let base = '/xboot';
+let base = '';
 // 超时设定
 axios.defaults.timeout = 15000;
-
 axios.interceptors.request.use(config => {
     return config;
 }, err => {
@@ -61,27 +60,23 @@ export const getRequest = (url, params) => {
         url: `${base}${url}`,
         params: params,
         headers: {
-            'accessToken': accessToken
+            'X-ER-UAT': accessToken,
+            'Content-Type': 'application/json;charset=UTF-8'
         }
     });
 };
 
 export const postRequest = (url, params) => {
     let accessToken = getStore("accessToken");
+    if(!params){
+        params = {};
+    }
     return axios({
         method: 'post',
         url: `${base}${url}`,
         data: params,
-        transformRequest: [function (data) {
-            let ret = '';
-            for (let it in data) {
-                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
-            }
-            return ret;
-        }],
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'accessToken': accessToken
+            'X-ER-UAT': accessToken
         }
     });
 };
@@ -91,17 +86,10 @@ export const putRequest = (url, params) => {
     return axios({
         method: 'put',
         url: `${base}${url}`,
-        data: params,
-        transformRequest: [function (data) {
-            let ret = '';
-            for (let it in data) {
-                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
-            }
-            return ret;
-        }],
+        params: params,
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'accessToken': accessToken
+            'Content-Type':'application/json',
+            'X-ER-UAT': accessToken
         }
     });
 };
@@ -113,7 +101,7 @@ export const deleteRequest = (url, params) => {
         url: `${base}${url}`,
         params: params,
         headers: {
-            'accessToken': accessToken
+            'X-ER-UAT': accessToken
         }
     });
 };
@@ -125,7 +113,7 @@ export const uploadFileRequest = (url, params) => {
         url: `${base}${url}`,
         params: params,
         headers: {
-            'accessToken': accessToken
+            'X-ER-UAT': accessToken
         }
     });
 };

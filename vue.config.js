@@ -1,14 +1,19 @@
 module.exports = {
     devServer: {
         host: '127.0.0.1',
-        port: 9999,
+        port: 20000,
         proxy: {
-            '/xboot': {
-                target: 'http://127.0.0.1:8888',  // 请求本地 需要xboot后台项目
-                ws: true
+            '/cert': {
+                target: 'http://10.54.121.219:8082'
             },
-            '/foo': {
-                target: '<other_url>'
+            '/dict':{
+                target: 'http://10.54.121.219:8083'
+            },
+            '/res': {
+                target:'http://10.54.121.219:8084'
+            },
+            '/base': {
+                target: 'http://10.54.121.219:8081'
             }
         }
     },

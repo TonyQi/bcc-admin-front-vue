@@ -55,12 +55,12 @@
                         <Timeline>
                             <TimelineItem>
                                 <Icon type="logo-youtube" color="#fb7299" slot="dot"></Icon>
-                                <a @click="showVideo=true">作者亲自制作XBoot文字快闪宣传片 点我观看 
+                                <a @click="showVideo=true">作者亲自制作XBoot文字快闪宣传片 点我观看
                                                 </a>
                             </TimelineItem>
                             <TimelineItem>
                                 <Icon type="logo-youtube" color="#fb7299" slot="dot"></Icon>
-                                <a href="https://www.bilibili.com/video/av23121122/" target="_blank">作者亲自制作各项目宣传视频 点我观看 
+                                <a href="https://www.bilibili.com/video/av23121122/" target="_blank">作者亲自制作各项目宣传视频 点我观看
                                                 </a>
                             </TimelineItem>
                             <TimelineItem>
@@ -116,20 +116,20 @@
                                 <div class="qr">
                                     <img src="@/assets/qr.png" width="120">
                                     <div>支持手机扫码支付，限时优惠！<br>赠送
-                                        <a href="https://v.qq.com/x/page/f0627kf4x1e.html" target="_blank">XMall小程序(不含后台)</a> + 
+                                        <a href="https://v.qq.com/x/page/f0627kf4x1e.html" target="_blank">XMall小程序(不含后台)</a> +
                                         <a href="https://github.com/Exrick/xpay" target="_blank">XPay个人收款支付系统v1.6</a>
                                     </div>
                                 </div>
                                 <div class="flex">
                                     完整版(仅供学习)：
-                                    <span class="rmb">￥</span> <span class="price">168</span> 
-                                    <span class="origin">￥</span><s class="origin">198</s> 
+                                    <span class="rmb">￥</span> <span class="price">168</span>
+                                    <span class="origin">￥</span><s class="origin">198</s>
                                     <Button to="http://xpay.exrick.cn/pay?xboot" target="_blank" type="error" icon="md-paper-plane" style="margin-left:10px;">立即获取</Button>
                                 </div>
                                 <div class="flex">
                                     商用授权价格：
-                                    <span class="rmb">￥</span> <span class="price">5998</span> 
-                                    <span class="origin">￥</span><s class="origin">9998</s> 
+                                    <span class="rmb">￥</span> <span class="price">5998</span>
+                                    <span class="origin">￥</span><s class="origin">9998</s>
                                     <Button to="http://wpa.qq.com/msgrd?v=3&uin=1012139570&site=qq&menu=yes" target="_blank" type="warning" icon="logo-vimeo" style="margin-left:10px;">获取商用授权</Button><br>
                                 </div>
                                 <Alert style="padding: 8px 16px 8px 16px;">
@@ -153,46 +153,6 @@
                 </Row>
             </Col>
         </Row>
-        <Row :gutter="10">
-            <Col :md="24" :lg="8" :style="{marginBottom: '10px'}">
-            <Card>
-                <p slot="title" class="card-title">
-                    <Icon type="md-map"></Icon>
-                    每日来访量统计
-                </p>
-                <div class="data-source-row">
-                    <visite-volume></visite-volume>
-                </div>
-            </Card>
-            </Col>
-            <Col :md="24" :lg="16" :style="{marginBottom: '10px'}">
-                <Card :padding="0">
-                    <p slot="title" class="card-title">
-                        <Icon type="md-locate"></Icon>
-                        今日服务调用地理分布
-                    </p>
-                    <div class="map-con">
-                        <Col span="10">
-                        <map-data-table :cityData="cityData" height="281" :style-obj="{margin: '12px 0 0 11px'}"></map-data-table>
-                        </Col>
-                        <Col span="14" class="map-incon">
-                        <Row type="flex" justify="center" align="middle">
-                            <home-map :city-data="cityData"></home-map>
-                        </Row>
-                        </Col>
-                    </div>
-                </Card>
-            </col>
-        </Row>
-        <Modal
-            v-model="showVideo"
-            title="作者亲自制作XBoot炫酷文字快闪宣传片"
-            :styles="{top: '30px'}"
-            footer-hide
-            width="1000"
-            >
-            <iframe src="//player.bilibili.com/player.html?aid=30284667&cid=52827707&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;height:550px;"> </iframe>
-        </Modal>
     </div>
 </template>
 
@@ -237,51 +197,35 @@ export default {
   },
   computed: {
     avatarPath() {
-      return localStorage.avatorImgPath;
+      return 'http://img.exrick.cn/992d950bb04c446bae202c639d21b68b.png';
     }
   },
   methods: {
     init() {
-      let userInfo = JSON.parse(Cookies.get("userInfo"));
-      this.username = userInfo.username;
-      ipInfo().then(res => {
-        if (res.success === true) {
-          let ipInfo = JSON.parse(res.result);
-          if (ipInfo.retCode === "200") {
-            let info = ipInfo.result[0];
-            let weather =
-              info.weather +
-              " " +
-              info.temperature +
-              " 污染指数: " +
-              info.pollutionIndex;
-            this.city = info.city;
-            this.weather = weather;
-          } else {
-            this.city = "未知";
-            this.weather = "未知";
-          }
-        }
-      });
+      this.username = Cookies.get("username");
+      // ipInfo().then(res => {
+      //   if (res.success === true) {
+      //     let ipInfo = JSON.parse(res.result);
+      //     if (ipInfo.retCode === "200") {
+      //       let info = ipInfo.result[0];
+      //       let weather =
+      //         info.weather +
+      //         " " +
+      //         info.temperature +
+      //         " 污染指数: " +
+      //         info.pollutionIndex;
+      //       this.city = info.city;
+      //       this.weather = weather;
+      //     } else {
+      //       this.city = "未知";
+      //       this.weather = "未知";
+      //     }
+      //   }
+      // });
     }
   },
   mounted() {
     this.init();
-    var gitalk = new Gitalk({
-      clientID: "a128de2dd7383614273a",
-      clientSecret: "a77691ecb662a8303a6c686ae651ae035868da6e",
-      repo: "xboot-comments",
-      owner: "Exrick",
-      admin: ["Exrick"],
-      distractionFreeMode: false // 遮罩效果
-    });
-    gitalk.render("comments");
-    // 宣传视频
-    let xbootVideo = Boolean(Cookies.get("xbootVideo"));
-    if (!xbootVideo) {
-      this.showVideo = true;
-      Cookies.set("xbootVideo", true);
-    }
   }
 };
 </script>

@@ -1,8 +1,8 @@
 {
-  "name": "xboot-front",
+  "name": "bcc-admin-front-vue",
   "version": "0.1.0",
   "description": "x-boot前后端分离开发平台",
-  "author": "Exrick <1012139570@qq.com>",
+  "author": "qipf",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",

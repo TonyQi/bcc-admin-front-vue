@@ -134,9 +134,8 @@ export default {
       if (pathArr.length >= 2) {
         this.$store.commit("addOpenSubmenu", pathArr[1].name);
       }
-      let userInfo = JSON.parse(Cookies.get("userInfo"));
-      this.username = userInfo.username;
-      this.userId = userInfo.id;
+      this.username = Cookies.get("username");
+      this.userId = Cookies.get("userId");
       this.checkTag(this.$route.name);
     },
     toggleClick() {
