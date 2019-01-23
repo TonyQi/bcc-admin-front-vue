@@ -22,17 +22,12 @@ axios.interceptors.response.use(response => {
     switch (data.code) {
         case 401:
             // 未登录 清除已登录状态
-            Cookies.set('userInfo', '');
             setStore('accessToken', '');
             router.push('/login');
             break;
         case 403:
-            // 没有权限
-            if (data.message !== null) {
-                Message.error(data.message);
-            } else {
-                Message.error("未知错误");
-            }
+            setStore('accessToken', '');
+            router.push('/login');
             break;
         case 500:
             // 错误

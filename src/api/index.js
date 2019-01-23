@@ -14,3 +14,7 @@ export const getCaptImage = () => {
 export const login = (params) => {
     return postRequest('/cert/api/cert/actions/login', params)
 }
+export const getTellerList = (params) => {
+
+    return postRequest('/base/api/tellers/infos?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex, params)
+}
