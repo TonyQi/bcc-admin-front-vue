@@ -17,17 +17,19 @@ axios.interceptors.request.use(config => {
 // http response 拦截器
 axios.interceptors.response.use(response => {
     const data = response.data;
-
-    // 根据返回的code值来做不同的处理(和后端约定)
-    switch (data.code) {
+    return data;
+}, (err) => {
+    switch (err.response.status) {
         case 401:
             // 未登录 清除已登录状态
             setStore('accessToken', '');
             router.push('/login');
+            Promise.resolve(err)
             break;
         case 403:
             setStore('accessToken', '');
             router.push('/login');
+            Promise.resolve(err)
             break;
         case 500:
             // 错误
@@ -38,14 +40,10 @@ axios.interceptors.response.use(response => {
             }
             break;
         default:
-            return data;
+            // 返回状态码不为200时候的错误处理
+            Message.error(err.toString());
+            // Promise.resolve(err);
     }
-
-    return data;
-}, (err) => {
-    // 返回状态码不为200时候的错误处理
-    Message.error(err.toString());
-    return Promise.resolve(err);
 });
 
 export const getRequest = (url, params) => {
@@ -54,6 +52,7 @@ export const getRequest = (url, params) => {
         method: 'get',
         url: `${base}${url}`,
         params: params,
+        data:{},
         headers: {
             'X-ER-UAT': accessToken,
             'Content-Type': 'application/json;charset=UTF-8'

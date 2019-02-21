@@ -14,9 +14,6 @@
                             <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
                             <Button @click="handleReset">重置</Button>
                             <Button @click="handleReset">增加</Button>
-                            <Button @click="handleReset">编辑</Button>
-                            <Button @click="handleReset">密码重置</Button>
-                            <Button @click="handleReset">删除</Button>
                         </Form-item>
                     </Form>
                 </Card>
@@ -34,7 +31,12 @@
 </template>
 
 <script>
-    import { getTellerList } from '@/api/index';
+    import { getTellerList,
+             resetTellerPasswd,
+             delTeller,
+             getDictDataByDictId
+            } from '@/api/index';
+    import { Message } from 'iview';
     export default {
         name: "user-manage",
         components: {
@@ -66,7 +68,31 @@
                     },
                     {
                         title: '性别',
-                        key: 'sex'
+                        key: 'sex',
+                        render: (h, params) => {
+                            let icon = "";
+                            let color= "";
+                            let sex = params.row.sex;
+                            if (sex ==="1"){
+                                icon ="ios-man";
+                                color = "#5cadff";
+                            }else{
+                                icon = "ios-woman";
+                                color = "pink";
+                            }
+                            return h('div',[
+                                    h('Icon',
+                                        {
+                                            props: {
+                                                type: icon,
+                                                color: color
+                                            }
+                                        }
+                                    )
+                                ]
+
+                            )
+                        }
                     },
                     {
                         title: '固定电话',
@@ -86,14 +112,84 @@
                     },
                     {
                         title: '人员状态',
-                        key: 'tlrstat'
+                        key: 'tlrstat',
+                        render: (h, params) => {
+                            let color= "";
+                            let stat = params.row.tlrstat;
+                            let statstring = this.tellerStateDict[stat];
+
+                            if (stat ==="01"){
+                                color = "success";
+                            }else{
+                                color = "red";
+                            }
+                            return h('div',[
+
+                                    h('Tag',
+                                        {
+                                            props: {
+                                                color: color
+                                            }
+                                        },
+                                        statstring
+                                    )
+                                ]
+
+                            )
+                        }
                     },
                     {
                         title: '维护时间',
-                        key: 'opertimestamp'
+                        key: 'opertimestamp',
+                        render: (h, params) => {
+                            let time = params.row.opertimestamp;
+                            time =  time.substring(0,4)+"-"+time.substring(4,6)+"-"+time.substring(6,8)+" "+time.substring(8,10)+":"+time.substring(10,12)+":"+time.substring(12,14);
+
+                            return h('div',
+                                time
+                            )
+                        }
                     },
+                    {
+                        title: '操作',
+                        key:'action',
+                        width: 190,
+                        render:(h,params) =>{
+                            return h('div',[
+                                    h('Button',{
+                                            props: {
+                                                type: 'primary'
+                                            },
+                                            style: {
+                                                marginRight: '5px'
+                                            },
+                                            on: {
+                                                click: () => {
+                                                    this.handleResetPwd(params.row.tlrno);
+                                                }
+                                            }
+                                        },
+                                        '重置密码'
+                                    ),
+                                    h('Button',{
+                                            props: {
+                                                type: 'error'
+                                            },
+                                            on: {
+                                                click: () => {
+                                                    this.remove(params.row.tlrno);
+                                                }
+                                            }
+                                        },
+                                        '删除'
+                                    ),
+                                ]
+                            );
+                        }
+                    }
                 ],
-                data1:[]
+                data1:[],
+                tellerStateDict:{}
             }
         },
         methods: {
@@ -116,9 +212,59 @@
                 }
                 this.drop = !this.drop;
 
+            },
+            handleResetPwd(tellerno){
+                let teller={};
+                teller.tlrno= tellerno;
+                let tellers = [];
+                tellers.push(teller)
+                resetTellerPasswd(tellers).then(res=>{
+                    if(res.code ==="000000"){
+                        this.$Notice.success({
+                            title: '操作成功',
+                            desc: ''
+                        });
+                    }else{
+                        this.$Notice.error({
+                            title: '操作失败',
+                            desc: ''
+                        });
+                    }
+                });
+            },
+            remove(tellerno){
+                let teller={};
+                teller.tlrno= tellerno;
+                let tellers = [];
+                tellers.push(teller);
+                delTeller(tellers).then(res=>{
+                    if(res.code ==="000000"){
+                        this.$Notice.success({
+                            title: '操作成功',
+                            desc: ''
+                        });
+                        this.handleSearch(this.searchForm)
+                    }else{
+                        this.$Notice.error({
+                            title: '操作失败',
+                            desc: ''
+                        });
+                    }
+                });
+            },
+            getTellerStateDict(){
+                getDictDataByDictId('Tlr_Stat').then(res =>{
+                    if (res.code ==="000000") {
+                        res.data.forEach( v =>{
+                           this.tellerStateDict[v.dictId] = v.dictName;
+                        });
+                    }
+
+                })
             }
         },
         mounted() {
+            this.getTellerStateDict();
             this.handleSearch(this.searchForm);
         }
     };
