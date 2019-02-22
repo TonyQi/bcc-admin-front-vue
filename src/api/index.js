@@ -16,17 +16,28 @@ export const login = (params) => {
 }
 //获取人员列表
 export const getTellerList = (params) => {
-
     return postRequest('/base/api/tellers/infos?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex, params)
 }
 //重置人员密码
 export const resetTellerPasswd = (params)=>{
     return postRequest('/base/api/tellers/actions/resetpwd',params)
 }
-//重置人员密码
+//删除人员
 export const delTeller = (params)=>{
     return postRequest('/base/api/tellers/actions/del',params)
 }
 export const getDictDataByDictId = (params)=>{
     return getRequest('/dict/api/dict/entrties/actions/query?dictTypeId='+params)
+}
+export const getMaxTellerId = (params)=>{
+    return postRequest('/base/api/tellers/actions/querymax')
+}
+export const getTellerById = (params)=>{
+    return postRequest('/base/api/tellers/actions/querymax')
+}
+export const addTeller = (params)=>{
+    return postRequest('/base/api/tellers/actions/add',params)
+}
+export const upTeller = (params)=>{
+    return postRequest('/base/api/tellers/actions/up',params);
 }

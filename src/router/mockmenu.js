@@ -14,7 +14,7 @@ export const mockmenu =[
         "children":[
             {
                 "id":"5129710648430592",
-                "name":"sys",
+                "name":"tellermanager",
                 "level":1,
                 "type":0,
                 "title":"用戶管理",
@@ -22,6 +22,20 @@ export const mockmenu =[
                 "component":"coframe/teller/tellerManage",
                 "icon":"ios-settings",
                 "sortOrder":1,
+                "status":0,
+                "url":"",
+                "permTypes":null
+            },
+            {
+                "id":"512dddeee648430593",
+                "name":"menumanager",
+                "level":1,
+                "type":0,
+                "title":"菜单管理",
+                "path":"",
+                "component":"coframe/menu/menumanager",
+                "icon":"ios-settings",
+                "sortOrder":2,
                 "status":0,
                 "url":"",
                 "permTypes":null
