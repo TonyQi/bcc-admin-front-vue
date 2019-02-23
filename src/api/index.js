@@ -41,3 +41,6 @@ export const addTeller = (params)=>{
 export const upTeller = (params)=>{
     return postRequest('/base/api/tellers/actions/up',params);
 }
+export const getAllMenu = ()=>{
+    return getRequest('/res/permission/actions/query/allMenus');
+}
