@@ -41,6 +41,31 @@ export const addTeller = (params)=>{
 export const upTeller = (params)=>{
     return postRequest('/base/api/tellers/actions/up',params);
 }
-export const getAllMenu = ()=>{
-    return getRequest('/res/permission/actions/query/allMenus');
+export const getAllMenu = (parentId)=>{
+    let url = "/res/api/menus";
+    if(parentId){
+        url = url + "?parentId="+parentId;
+    }
+    return getRequest(url);
+}
+export const addMenu=(params)=>{
+    return postRequest('/res/api/menu/actions/add',params);
+};
+export const getMenuById=(params)=>{
+    return getRequest('/res/api/menu/'+params);
+};
+export const updateMenuById=(params)=>{
+    return postRequest('/res/api/menu/actions/up',params);
+};
+export const queryAllRoles=(params)=>{
+    return postRequest('/res/api/position/positions?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex,params);
+};
+export const saveRole=(params)=>{
+    return postRequest('/res/api/position/actions/add',params);
+};
+export const delRole=(params)=>{
+    return getRequest('/res/api/position/actions/del?positionCode='+params);
+};
+export const upRole=(params)=>{
+    return postRequest('/res/api/position/actions/up',params);
 }

@@ -4,16 +4,16 @@ module.exports = {
         port: 20000,
         proxy: {
             '/cert': {
-                target: 'http://192.168.253.191:8080'
+                target: 'http://192.168.160.80:8080'
             },
             '/dict':{
-                target: 'http://192.168.253.192:8080'
+                target: 'http://192.168.160.79:8080'
             },
             '/res': {
-                target:'http://192.168.253.190:8080'
+                target:'http://127.0.0.1:10000'
             },
             '/base': {
-                target: 'http://192.168.253.189:8080'
+                target: 'http://192.168.160.83:8080'
             }
         }
     },

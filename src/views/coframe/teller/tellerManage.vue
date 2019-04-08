@@ -25,7 +25,7 @@
             </Col>
         </Row>
         <Row>
-            <Page  :current="searchForm.pageIndex" :page-size="searchForm.pageSize" :total="total"  show-total />
+            <Page  :current="searchForm.pageIndex" :page-size="searchForm.pageSize" :total="total"  show-total @on-change="pageChange"/>
         </Row>
         <Modal v-model="showForm" :title="formTitle" width="700" :loading="loading" @on-ok="onOK">
                 <Form :model="tellerFrom" :label-width="120" inline>
@@ -507,6 +507,10 @@
                     });
                 }
                 this.handleSearch(this.searchForm);
+            },
+            pageChange(pageIndex){
+                this.searchForm.pageIndex = pageIndex;
+                this.handleSearch();
             }
         },
         mounted() {
