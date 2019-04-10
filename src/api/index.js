@@ -68,4 +68,10 @@ export const delRole=(params)=>{
 };
 export const upRole=(params)=>{
     return postRequest('/res/api/position/actions/up',params);
-}
+};
+export const querMenusWithRoleCode=(params)=>{
+    return getRequest('/res/api/res/auth/menus/checks?roleCode='+params);
+};
+export const saveMenuAuthConfig=(params,roleCode)=>{
+    return postRequest('/res/api/res/auth/menus/checks?roleId='+roleCode,params);
+};
