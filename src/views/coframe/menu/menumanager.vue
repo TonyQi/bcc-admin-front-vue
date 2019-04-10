@@ -2,7 +2,7 @@
     <div class="search">
         <Card>
             <Row>
-                <Button @click="addMenu" type="primary" icon="md-add">添加子节点</Button>
+                <Button @click="addMenu" type="primary" icon="md-add" :disabled="addSubAble">添加子节点</Button>
                 <Button @click="addRootMenu" icon="md-add">添加一级菜单</Button>
                 <Button @click="delAll"  icon="md-trash">删除</Button>
 
@@ -138,7 +138,8 @@
                     leafFlag: 0
 
                 },
-                editTitle:""
+                editTitle:"",
+                addSubAble:false
             }
         },
         methods: {
@@ -161,6 +162,7 @@
             },
             handleSelectIcon(v) {
                 this.permissionForm.icon = v;
+                this.menuForm.icon = v;
                 this.iconModalVisible = false;
             },
             addMenu(){
@@ -182,6 +184,11 @@
                     this.editTitle = item[0].title;
                     getMenuById(item[0].id).then(res=>{
                         res.data.leafFlag = parseInt(res.data.leafFlag);
+                        if(res.data.leafFlag ===1){
+                            this.addSubAble = true;
+                        }else{
+                            this.addSubAble = false;
+                        }
                         this.permissionForm.icon = res.data.icon;
                         this.menuForm = res.data;
                     });
@@ -203,6 +210,10 @@
             },
             saveUpdateMenu(){
                 updateMenuById(this.menuForm).then(res=>{
+                    this.$Notice.open({
+                        title: '修改成功',
+                        desc:  ''
+                    });
                     this.getAllMenuData();
                 });
             },
@@ -212,7 +223,13 @@
             delAll(){
                 const nodes = this.$refs.tree.getSelectedNodes();
                 if(nodes && nodes.length >0){
-                    delMenu(nodes[0].id);
+                    delMenu(nodes[0].id).then(res =>{
+                        this.$Notice.open({
+                            title: '删除成功',
+                            desc:  ''
+                        });
+                        this.getAllMenuData();
+                    });
                 }else{
                     Message.error("请先选择一个菜单！");
                 }

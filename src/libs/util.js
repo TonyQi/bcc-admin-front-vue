@@ -9,7 +9,7 @@ let util = {
 };
 
 util.title = function (title) {
-    title = title || 'X-Boot 前后端分离开发平台';
+    title = title || 'Java开发平台';
     window.document.title = title;
 };
 

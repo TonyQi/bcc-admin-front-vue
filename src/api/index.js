@@ -57,6 +57,9 @@ export const getMenuById=(params)=>{
 export const updateMenuById=(params)=>{
     return postRequest('/res/api/menu/actions/up',params);
 };
+export const delMenu=(params)=>{
+    return getRequest('/res/api/menu/actions/del/'+params);
+}
 export const queryAllRoles=(params)=>{
     return postRequest('/res/api/position/positions?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex,params);
 };
@@ -75,3 +78,6 @@ export const querMenusWithRoleCode=(params)=>{
 export const saveMenuAuthConfig=(params,roleCode)=>{
     return postRequest('/res/api/res/auth/menus/checks?roleId='+roleCode,params);
 };
+export const changePassPwd=(params)=>{
+    return postRequest('/base/api/tellers/actions/changepwd',params);
+}

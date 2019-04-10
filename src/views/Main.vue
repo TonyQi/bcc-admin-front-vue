@@ -32,7 +32,7 @@
                 <a href="javascript:void(0)">
                   <span class="main-user-name">{{ username }}</span>
                   <Icon type="md-arrow-dropdown" />
-                  <Avatar :src="avatarPath" style="background: #619fe7;margin-left: 10px;"></Avatar>
+                  <Avatar style="margin-left: 10px;" class="avatar-head"></Avatar>
                 </a>
                 <DropdownMenu slot="list">
                   <DropdownItem name="changePass">{{ $t('changePass') }}</DropdownItem>
@@ -54,6 +54,34 @@
         </keep-alive>
       </div>
     </div>
+    <Modal
+            v-model="showChangePasswd"
+            title="修改密码"
+            @on-ok="saveChangePwd"
+            @on-cancel="cancelChangePwd">
+      <Form ref="formInline" :model="formInline" :rules="passwordValidate" :label-width="100">
+        <FormItem label="当前用户" prop="tlrno">
+          <Input type="text" v-model="formInline.tlrno" placeholder="当前用户" :disabled="true">
+            <Icon type="ios-person-outline" slot="prepend"></Icon>
+          </Input>
+        </FormItem>
+        <FormItem label="旧密码" prop="passwd">
+          <Input type="password" v-model="formInline.passwd" placeholder="旧密码">
+            <Icon type="ios-lock-outline" slot="prepend"></Icon>
+          </Input>
+        </FormItem>
+        <FormItem label="请输入新密码" prop="resefieldoen">
+          <Input type="password" v-model="formInline.resefieldoen" placeholder="新密码">
+            <Icon type="ios-lock-outline" slot="prepend"></Icon>
+          </Input>
+        </FormItem>
+        <FormItem label="重复新密码" prop="resefieldoen1">
+          <Input type="password" v-model="formInline.resefieldoen1" placeholder="重复输入密码">
+            <Icon type="ios-lock-outline" slot="prepend"></Icon>
+          </Input>
+        </FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 
@@ -66,6 +94,8 @@ import lockScreen from "./main-components/lockscreen/lockscreen.vue";
 import messageTip from "./main-components/message-tip.vue";
 import Cookies from "js-cookie";
 import util from "@/libs/util.js";
+import { changePassPwd
+} from '@/api/index';
 
 export default {
   components: {
@@ -77,12 +107,65 @@ export default {
     messageTip
   },
   data() {
+    const valideRePassword = (rule, value, callback) => {
+      if (value !== this.formInline.resefieldoen) {
+        callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
+      }
+    };
     return {
       shrink: false,
       username: "",
       userId: "",
       isFullScreen: false,
-      openedSubmenuArr: this.$store.state.app.openedSubmenuArr
+      showChangePasswd: false,
+      openedSubmenuArr: this.$store.state.app.openedSubmenuArr,
+      formInline:{
+        tlrno:''
+      },
+      passwordValidate: {
+        passwd: [
+          {
+            required: true,
+            message: "请输入原密码",
+            trigger: "blur"
+          },
+          {
+            min: 6,
+            message: "请至少输入6个字符",
+            trigger: "blur"
+          }
+        ],
+        resefieldoen: [
+          {
+            required: true,
+            message: "请输入新密码",
+            trigger: "blur"
+          },
+          {
+            min: 6,
+            message: "请至少输入6个字符",
+            trigger: "blur"
+          },
+          {
+            max: 32,
+            message: "最多输入32个字符",
+            trigger: "blur"
+          }
+        ],
+        resefieldoen1: [
+          {
+            required: true,
+            message: "请再次输入新密码",
+            trigger: "blur"
+          },
+          {
+            validator: valideRePassword,
+            trigger: "blur"
+          }
+        ]
+      }
     };
   },
   computed: {
@@ -135,21 +218,10 @@ export default {
       this.$store.commit("switchLang", name);
     },
     handleClickUserDropdown(name) {
-      if (name === "ownSpace") {
-        util.openNewPage(this, "ownspace_index");
-        this.$router.push({
-          name: "ownspace_index"
-        });
-      } else if (name === "ownSpaceOld") {
-        util.openNewPage(this, "ownspace_old");
-        this.$router.push({
-          name: "ownspace_old"
-        });
-      } else if (name === "changePass") {
+      if (name === "changePass") {
         util.openNewPage(this, "change_pass");
-        this.$router.push({
-          name: "change_pass"
-        });
+        this.showChangePasswd = true;
+        this.formInline.tlrno = Cookies.get("username");
       } else if (name === "loginout") {
         // 退出登录
         this.$store.commit("logout", this);
@@ -183,6 +255,29 @@ export default {
     },
     fullscreenChange(isFullScreen) {
       // console.log(isFullScreen);
+    },
+    saveChangePwd(){
+      this.formInline.tlrno = Cookies.get("userId");
+      changePassPwd(this.formInline).then(res =>{
+        let code = res.code;
+        if (code ==="000000"){
+          this.$Notice.success({
+            title: '密码修改成功',
+            desc:  ''
+          });
+          this.showChangePasswd = false;
+        }else{
+          this.$Notice.error({
+            title: '原密码错误',
+            desc:  ''
+          });
+        }
+
+
+      });
+    },
+    cancelChangePwd(){
+      this.showChangePasswd = false;
     }
   },
   watch: {

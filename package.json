@@ -1,7 +1,7 @@
 {
   "name": "bcc-admin-front-vue",
   "version": "0.1.0",
-  "description": "x-boot前后端分离开发平台",
+  "description": "Java开发平台",
   "author": "qipf",
   "private": true,
   "scripts": {
