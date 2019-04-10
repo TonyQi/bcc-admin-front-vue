@@ -28,7 +28,7 @@
         <Row>
             <Page  :current="searchForm.pageIndex" :page-size="searchForm.pageSize" :total="total"  show-total @on-change="pageChange"/>
         </Row>
-        <Modal title="新增角色" v-model="roleFormVisiable" :width="400" :styles="{top: '30px'}" footer-hide>
+        <Modal :title="modelTitle" v-model="roleFormVisiable" :width="400" :styles="{top: '30px'}" footer-hide>
             <Row>
                 <Form :model="roleForm" :label-width="80">
                     <FormItem label="角色编码">
@@ -41,7 +41,7 @@
                     <FormItem label="启用日期">
                         <DatePicker v-model="roleForm.effectDate" type="date" format="yyyy-MM-dd" style="width:288px"></DatePicker>
                     </FormItem>
-                    <FormItem label="人员类别">
+                    <FormItem label="角色类别">
                         <Select v-model="roleForm.roleType" style="width:288px">
                             <Option v-for="item in roleTypeDict" :value="item.dictId" :key="item.dictId">{{ item.dictName }}</Option>
                         </Select>
@@ -60,8 +60,11 @@
                     children-key="children"
                     show-checkbox
             >
-
             </Tree>
+            <div style="text-align:center">
+                <Button @click="saveConfig" type="primary">保存</Button>
+                <Button @click="cancelConfig" type="text">取消</Button>
+            </div>
         </Modal>
     </div>
 </template>
@@ -71,7 +74,9 @@
         getDictDataByDictId,
         saveRole,
         delRole,
-        upRole
+        upRole,
+        querMenusWithRoleCode,
+        saveMenuAuthConfig
     } from '@/api/index';
     export default {
         name: "roleManager",
@@ -80,6 +85,7 @@
                 roleFormVisiable:false,
                 roleConfigVisiable:false,
                 codeAble:true,
+                modelTitle: "",
                 searchForm:{
                     positionCode: "",
                     positionName: "",
@@ -185,16 +191,8 @@
                 roleForm:{},
                 roleTypeDict:[],
                 roleTypeDictMap:{},
-                data:[
-                    {
-                        title:'1111',
-                        children:[
-                            {
-                                title: 'www'
-                            }
-                        ]
-                    }
-                ]
+                data:[],
+                roleCode:''
             }
 
         },
@@ -232,11 +230,13 @@
                 this.codeAble =false;
                 this.roleForm = {};
                 this.roleFormVisiable = true;
+                this.modelTitle ='新增角色';
             },
             handleUpdate(role){
                 this.roleForm = role ;
                 this.roleFormVisiable = true;
                 this.codeAble =true;
+                this.modelTitle ='修改角色';
             },
             saveRole(){
                 this.roleForm.effectDate = this.dateFtt("yyyyMMdd",this.roleForm.effectDate);
@@ -292,7 +292,29 @@
                 });
             },
             handleConfig(row){
+                this.roleCode = row.positionCode;
+                querMenusWithRoleCode(row.positionCode).then(res=>{
+                    this.data = res.data;
+
+                });
                 this.roleConfigVisiable = true;
+            },
+            removeNullItem(array){
+                array.forEach(v=>{
+                    if (v.loading === null) {
+                        delete v.loading;
+                    }
+                });
+            },
+            saveConfig(){
+                let checkedenus = this.$refs.tree.getCheckedNodes();
+                saveMenuAuthConfig(checkedenus,this.roleCode).then(res =>{
+
+                });
+                this.roleConfigVisiable = false;
+            },
+            cancelConfig(){
+                this.roleConfigVisiable = false;
             }
 
         },

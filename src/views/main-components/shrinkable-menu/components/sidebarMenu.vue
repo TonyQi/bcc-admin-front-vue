@@ -4,18 +4,29 @@
 <template>
     <Menu ref="sideMenu" accordion :active-name="$route.name" :open-names="singleOpenName" :theme="menuTheme" width="auto" @on-select="changeMenu">
         <template v-for="item in menuList">
-            <MenuItem v-if="item.children.length<=1" :name="item.children[0].name" :key="'menuitem' + item.name">
-                <Icon :type="item.children[0].icon || item.icon" :size="iconSize" :key="'menuicon' + item.name"></Icon>
-                <span class="layout-text" :key="'title' + item.name">{{ itemTitle(item.children[0]) }}</span>
+            <MenuItem v-if="item.leafFlag === '1'" :name="item.name" :key="'menuitem' + item.name">
+                <Icon :type="item.icon" :size="iconSize" :key="'menuicon' + item.name"></Icon>
+                <span class="layout-text" :key="'title' + item.name">{{ itemTitle(item) }}</span>
             </MenuItem>
-
-            <Submenu v-if="item.children.length > 1" :name="item.name" :key="item.name">
+            <Submenu v-if="item.children!=null && item.children.length >= 1" :name="item.name" :key="item.name">
                 <template slot="title">
                     <Icon :type="item.icon" :size="iconSize"></Icon>
                     <span class="layout-text">{{ itemTitle(item) }}</span>
                 </template>
                 <template v-for="child in item.children">
-                    <MenuItem :name="child.name" :key="'menuitem' + child.name">
+                    <Submenu v-if="child.leafFlag !='1'" :name="child.name" :key="child.name">
+                        <template slot="title">
+                            <Icon :type="child.icon" :size="iconSize"></Icon>
+                            <span class="layout-text">{{ itemTitle(child) }}</span>
+                        </template>
+                        <sidebar-menu
+                                :menu-theme="menuTheme"
+                                :menu-list="child.children"
+                                :open-names="openNames"
+                                @on-change="handleChange"
+                        ></sidebar-menu>
+                    </Submenu>
+                    <MenuItem v-if="child.leafFlag === '1'" :name="child.name" :key="'menuitem' + child.name">
                         <Icon :type="child.icon" :size="iconSize" :key="'icon' + child.name"></Icon>
                         <span class="layout-text" :key="'title' + child.name">{{ itemTitle(child) }}</span>
                     </MenuItem>
@@ -62,6 +73,20 @@ export default {
       return this.$route.matched
         .map(item => item.name)
         .filter(item => item !== name);
+    },
+    handleChange (name) {
+      let willpush = true;
+      if (this.beforePush !== undefined) {
+          if (!this.beforePush(name)) {
+              willpush = false;
+          }
+      }
+      if (willpush) {
+          this.$router.push({
+              name: name
+          });
+      }
+      this.$emit('on-change', name);
     }
   },
   updated() {
@@ -82,3 +107,6 @@ export default {
   }
 };
 </script>
+<style scoped="scoped">
+
+</style>

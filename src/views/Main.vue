@@ -25,16 +25,7 @@
           </div>
         </div>
         <div class="header-avator-con">
-          <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen>
-          <Dropdown @on-click="handleLanDropdown" class="options">
-            <Icon type="md-globe" :size="24" class="language"></Icon>
-            <DropdownMenu slot="list">
-              <DropdownItem name="zh-CN">中文</DropdownItem>
-              <DropdownItem name="en-US">English</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <lock-screen></lock-screen>
-          <message-tip v-model="mesCount"></message-tip>
+
           <div class="user-dropdown-menu-con">
             <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
               <Dropdown transfer trigger="hover" @on-click="handleClickUserDropdown">
@@ -44,8 +35,6 @@
                   <Avatar :src="avatarPath" style="background: #619fe7;margin-left: 10px;"></Avatar>
                 </a>
                 <DropdownMenu slot="list">
-                  <DropdownItem name="ownSpace">{{ $t('userCenter') }}</DropdownItem>
-                  <DropdownItem name="ownSpaceOld">{{ $t('userCenterOld') }}</DropdownItem>
                   <DropdownItem name="changePass">{{ $t('changePass') }}</DropdownItem>
                   <DropdownItem name="loginout" divided>{{ $t('logout') }}</DropdownItem>
                 </DropdownMenu>

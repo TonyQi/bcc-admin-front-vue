@@ -1,6 +1,6 @@
 <template>
   <Row type="flex" justify="center" align="middle" class="login" @keydown.enter.native="submitLogin">
-    <Col :xs="{span:22}" style="width: 368px;">
+    <Col :xs="{span:22}" class="login-col">
       <Alert type="error" show-icon v-if="error">{{errorMsg}}</Alert>
       <Row class="login-form">
         <Form ref="usernameLoginForm" :model="form" :rules="rules" class="form">
@@ -16,9 +16,9 @@
                   <Input  v-model="form.decode" prefix="md-checkmark-circle-outline" size="large" clearable placeholder="请输入验证码" autocomplete="off" />
                 </FormItem>
               </Col>
-              <Col span="12">
-                <a @click="showCaptImage">
-                  <img v-bind:src="'data:image/jpeg;base64,'+imageBytes">
+              <Col span="8">
+                <a @click="showCaptImage" class="captimage">
+                  <img v-bind:src="'data:image/jpeg;base64,'+imageBytes" class="img-class">
                 </a>
               </Col>
             </Row>
@@ -28,17 +28,6 @@
                               <span v-if="!loading">登录</span>
                               <span v-else>登录中...</span>
                           </Button>
-        </Row>
-      </Row>
-  
-      <Row class="foot">
-        <Row type="flex" justify="space-around" class="code-row-bg help">
-          <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">帮助</a>
-          <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">隐私</a>
-          <a class="item" href="https://github.com/Exrick/x-boot" target="_blank">条款</a>
-        </Row>
-        <Row type="flex" justify="center" class="code-row-bg copyright">
-          Copyright © 2018 - Present <a href="http://exrick.cn" target="_blank" style="margin:0 5px;">Exrick</a> 版权所有
         </Row>
       </Row>
     </Col>

@@ -203,6 +203,7 @@ export default {
   methods: {
     init() {
       this.username = Cookies.get("username");
+      console.log(this.username);
       // ipInfo().then(res => {
       //   if (res.success === true) {
       //     let ipInfo = JSON.parse(res.result);

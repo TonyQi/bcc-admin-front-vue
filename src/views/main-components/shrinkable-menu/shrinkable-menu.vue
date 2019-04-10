@@ -12,6 +12,7 @@
             :open-names="openNames"
             @on-change="handleChange"
         ></sidebar-menu>
+        <!--
         <sidebar-menu-shrink 
             v-show="shrink"
             :menu-theme="theme" 
@@ -19,6 +20,7 @@
             :icon-color="shrinkIconColor"
             @on-change="handleChange"
         ></sidebar-menu-shrink>
+        -->
     </div>
 </template>
 
@@ -57,10 +59,10 @@ export default {
     },
     computed: {
         bgColor () {
-            return this.theme === 'dark' ? '#515a6e' : '#fff';
+            return this.theme === 'dark' ? '#515a6e' : '#067B6C';
         },
         shrinkIconColor () {
-            return this.theme === 'dark' ? '#fff' : '#515a6e';
+            return this.theme === 'dark' ? '#067B6C' : '#005440';
         }
     },
     methods: {

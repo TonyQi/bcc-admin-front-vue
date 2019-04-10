@@ -2,7 +2,6 @@ import axios from 'axios';
 import { getMenuList } from '@/api/index';
 import lazyLoading from './lazyLoading.js';
 import router from '@/router/index';
-import { mockmenu } from '@/router/mockmenu';
 import Cookies from "js-cookie";
 
 let util = {
@@ -62,8 +61,8 @@ util.setCurrentPath = function (vm, name) {
     let title = '';
     let isOtherRouter = false;
     vm.$store.state.app.routers.forEach(item => {
-        if (item.children.length === 1) {
-            if (item.children[0].name === name) {
+        if (item.leafFlag === '1') {
+            if (item.name === name) {
                 title = util.handleTitle(vm, item);
                 if (item.name === 'otherRouter') {
                     isOtherRouter = true;
@@ -104,8 +103,8 @@ util.setCurrentPath = function (vm, name) {
         ];
     } else {
         let currentPathObj = vm.$store.state.app.routers.filter(item => {
-            if (item.children.length <= 1) {
-                return item.children[0].name === name;
+            if (item.leafFlag === '1') {
+                return item.name === name;
             } else {
                 let i = 0;
                 let childArr = item.children;
@@ -238,7 +237,7 @@ util.initRouter = function (vm) {
 
     // 404路由需要和动态路由一起注入
     const otherRouter = [{
-        path: '/*',
+        path: '/404',
         name: 'error-404',
         meta: {
             title: '404-页面不存在'
@@ -253,70 +252,59 @@ util.initRouter = function (vm) {
         return;
     }
 
-    // 加载菜单
-    // axios.get(getMenuList, {headers: {'accessToken': accessToken}}).then(res => {
-    //     let menuData = res.result;
-    //     if (menuData === null || menuData === "" || menuData === undefined) {
-    //         return;
-    //     }
-    //     util.initRouterNode(constRoutes, menuData);
-    //     util.initRouterNode(otherRoutes, otherRouter);
-    //     // 添加主界面路由
-    //     vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
-    //     // 添加全局路由
-    //     vm.$store.commit('updateDefaultRouter', otherRoutes);
-    //     // 刷新界面菜单
-    //     vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
-    //
-    //     let tagsList = [];
-    //     vm.$store.state.app.routers.map((item) => {
-    //         if (item.children.length <= 1) {
-    //             tagsList.push(item.children[0]);
-    //         } else {
-    //             tagsList.push(...item.children);
-    //         }
-    //     });
-    //     vm.$store.commit('setTagsList', tagsList);
-    // });
-    let menuData = mockmenu;
-    if (menuData === null || menuData === "" || menuData === undefined) {
-        return;
-    }
-    util.initRouterNode(constRoutes, menuData);
-    util.initRouterNode(otherRoutes, otherRouter);
-    // 添加主界面路由
-    vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
-    // 添加全局路由
-    vm.$store.commit('updateDefaultRouter', otherRoutes);
-    // 刷新界面菜单
-    vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
+    //加载菜单
+    axios.post('/res/api/res/auth/actions/tree', {headers: {'_token': accessToken}}).then(res => {
+        let menuData = res.data;
+        if (menuData === null || menuData === "" || menuData === undefined) {
+            return;
+        }
+        util.initRouterNode(constRoutes, menuData);
+        util.initRouterNode(otherRoutes, otherRouter);
+        // 添加主界面路由
+        vm.$store.commit('updateAppRouter', constRoutes.filter(item => (item.leafFlag==='1' ||(item.children!=null && item.children.length > 0))));
+        // 添加全局路由
+        vm.$store.commit('updateDefaultRouter', otherRoutes);
+        // 刷新界面菜单
+        vm.$store.commit('updateMenulist', constRoutes.filter(item => (item.leafFlag==='1' ||(item.children!=null && item.children.length > 0))));
 
-    let tagsList = [];
-    vm.$store.state.app.routers.map((item) => {
-        tagsList.push(...item.children);
+        let tagsList = [];
+        vm.$store.state.app.routers.map((item) => {
+            if (item.leafFlag==='1') {
+                tagsList.push(item);
+            } else {
+                tagsList.push(...item.children);
+            }
+        });
+        vm.$store.commit('setTagsList', tagsList);
     });
-    vm.$store.commit('setTagsList', tagsList);
+
 };
 
 // 生成路由节点
 util.initRouterNode = function (routers, data) {
     for (var item of data) {
         let menu = Object.assign({}, item);
-        // menu.component = import(`@/views/${menu.component}.vue`);
-        menu.component = lazyLoading(menu.component);
-
-        if (item.children && item.children.length > 0) {
-            menu.children = [];
-            util.initRouterNode(menu.children, item.children);
+        if(item.component){
+            menu.component = lazyLoading(menu.component);
         }
-
+        if (item.childrenList && item.childrenList.length > 0) {
+            menu.children = [];
+            util.initRouterNode(menu.children, item.childrenList);
+        }
         let meta = {};
         // 给页面添加权限、标题、第三方网页链接
         meta.permTypes = menu.permTypes ? menu.permTypes : null;
-        meta.title = menu.title ? menu.title + " - X-Boot前后端分离开发平台 By: Exrick" : null;
-        meta.url = menu.url ? menu.url : null;
+        meta.title = menu.menuLabel ? menu.menuLabel : null;
+        meta.url = menu.menuUrl ? menu.menuUrl : null;
         menu.meta = meta;
-
+        if (!menu.path) {
+            menu.component = lazyLoading(menu.uiEntry);
+            menu.path = menu.menuUrl;
+            menu.id = menu.menuId;
+            menu.name = menu.menuName;
+            menu.title = menu.menuLabel;
+            menu.icon = menu.icon;
+        }
         routers.push(menu);
     }
 };
