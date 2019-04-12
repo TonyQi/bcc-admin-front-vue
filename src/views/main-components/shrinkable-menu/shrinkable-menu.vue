@@ -12,7 +12,7 @@
             :open-names="openNames"
             @on-change="handleChange"
         ></sidebar-menu>
-        <!--
+
         <sidebar-menu-shrink 
             v-show="shrink"
             :menu-theme="theme" 
@@ -20,7 +20,7 @@
             :icon-color="shrinkIconColor"
             @on-change="handleChange"
         ></sidebar-menu-shrink>
-        -->
+
     </div>
 </template>
 

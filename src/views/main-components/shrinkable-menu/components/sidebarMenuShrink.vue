@@ -2,23 +2,44 @@
     <div>
         <template v-for="(item, index) in menuList">
             <div style="text-align: center;" :key="index">
-                <Dropdown transfer v-if="item.children.length !== 1" placement="right-start" :key="index" @on-click="changeMenu">
+                <Dropdown transfer v-if="item.leafFlag === '1'" placement="right-start" :key="index" @on-click="changeMenu">
                     <Button style="width: 70px;margin-left: -5px;padding:10px 0;" type="text">
                         <Icon :size="20" :color="iconColor" :type="item.icon"></Icon>
                     </Button>
-                    <DropdownMenu style="width: 200px;" slot="list">
-                        <template v-for="(child, i) in item.children">
-                            <DropdownItem :name="child.name" :key="i"><Icon :type="child.icon"></Icon><span style="padding-left:10px;">{{ itemTitle(child) }}</span></DropdownItem>
-                        </template>
-                    </DropdownMenu>
                 </Dropdown>
-                <Dropdown transfer v-else placement="right-start" :key="index" @on-click="changeMenu">
-                    <Button @click="changeMenu(item.children[0].name)" style="width: 70px;margin-left: -5px;padding:10px 0;" type="text">
-                        <Icon :size="20" :color="iconColor" :type="item.children[0].icon || item.icon"></Icon>
+                <Dropdown transfer v-if="item.children!=null && item.children.length >= 1" placement="right-start" :key="index" @on-click="changeMenu">
+                    <Button style="width: 70px;margin-left: -5px;padding:10px 0;" type="text">
+                        <Icon :size="20" :color="iconColor" :type="item.icon"></Icon>
                     </Button>
-                    <DropdownMenu style="width: 200px;" slot="list">
-                        <DropdownItem :name="item.children[0].name" :key="'d' + index"><Icon :type="item.children[0].icon || item.icon"></Icon><span style="padding-left:10px;">{{ itemTitle(item.children[0]) }}</span></DropdownItem>
-                    </DropdownMenu>
+                    <template v-for="child in item.children">
+                        <DropdownMenu style="width: 200px;" slot="list">
+                            <DropdownItem v-if="child.leafFlag ==='1'" :name="child.name" :key="child.id + index">
+                                <Icon  :type="child.icon"></Icon>
+                                <span style="padding-left:10px;">
+                                    {{ itemTitle(child) }}
+                                </span>
+                            </DropdownItem>
+                            <DropdownItem v-if="child.children!=null && child.children.length >= 1" :key="child.id + index">
+                                <Dropdown transfer placement="right-start" :key="child.id" @on-click="changeMenu" >
+                                    <DropdownItem style="margin-left:-15px;">
+                                        <Icon :type="child.icon"></Icon>
+                                        <span style="padding-left:10px;">
+                                            {{ itemTitle(child) }}
+                                        </span>
+                                        <Icon type="ios-arrow-forward"></Icon>
+                                    </DropdownItem>
+                                    <DropdownMenu slot="list">
+                                        <sidebar-menu-item
+                                                v-if="child.children!=null && child.children.length >= 1"
+                                                :menu-theme="menuTheme"
+                                                :menu-list="child.children"
+                                                @on-change="handleChange"
+                                        ></sidebar-menu-item>
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </template>
                 </Dropdown>
             </div>
         </template>
@@ -26,8 +47,10 @@
 </template>
 
 <script>
+import SidebarMenuItem from "./sidebarMenuItem";
 export default {
     name: 'sidebarMenuShrink',
+    components: {SidebarMenuItem},
     props: {
         menuList: {
             type: Array
@@ -51,6 +74,20 @@ export default {
             } else {
                 return item.title;
             }
+        },
+        handleChange (name) {
+            let willpush = true;
+            if (this.beforePush !== undefined) {
+                if (!this.beforePush(name)) {
+                    willpush = false;
+                }
+            }
+            if (willpush) {
+                this.$router.push({
+                    name: name
+                });
+            }
+            this.$emit('on-change', name);
         }
     }
 };

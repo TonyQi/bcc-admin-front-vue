@@ -18,7 +18,6 @@
         name: "dictManager"
     }
 </script>
-
 <style scoped>
 
 </style>
