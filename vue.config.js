@@ -14,6 +14,9 @@ module.exports = {
             },
             '/base': {
                 target: 'http://192.168.160.83:8080'
+            },
+            '/fileService': {
+                target: 'http://192.168.160.74:8080'
             }
         }
     },

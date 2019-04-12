@@ -80,4 +80,25 @@ export const saveMenuAuthConfig=(params,roleCode)=>{
 };
 export const changePassPwd=(params)=>{
     return postRequest('/base/api/tellers/actions/changepwd',params);
-}
+};
+export const queryImageItems=(params)=>{
+    return postRequest('/base/front/items?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex,params);
+};
+export const delItem=(id)=>{
+    return getRequest('/base/front/item/action/del/'+id);
+};
+export const queryImagesByItemsId=(id)=>{
+    return getRequest('/base/front/item/'+id);
+};
+export const saveFileInfo=(params)=>{
+    return postRequest('/fileService/file/fileInfo/save',params);
+};
+export const delImages=(id)=>{
+    return getRequest('/fileService/file/fileInfo/del/'+id);
+};
+export const saveImages=(params)=>{
+    return postRequest('/base/front/images/save',params);
+};
+export const delImagesItem=(params)=>{
+    return getRequest('/base/front/item/action/del/'+params);
+};
