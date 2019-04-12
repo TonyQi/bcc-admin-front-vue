@@ -309,7 +309,10 @@
             saveConfig(){
                 let checkedenus = this.$refs.tree.getCheckedNodes();
                 saveMenuAuthConfig(checkedenus,this.roleCode).then(res =>{
-
+                    this.$Notice.success({
+                        title: '权限配置成功',
+                        desc:  ''
+                    });
                 });
                 this.roleConfigVisiable = false;
             },
