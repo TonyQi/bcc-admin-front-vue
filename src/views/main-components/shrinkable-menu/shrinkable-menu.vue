@@ -59,10 +59,10 @@ export default {
     },
     computed: {
         bgColor () {
-            return this.theme === 'dark' ? '#515a6e' : '#067B6C';
+            return this.theme === 'dark' ? '#515a6e' : '#fff';
         },
         shrinkIconColor () {
-            return this.theme === 'dark' ? '#067B6C' : '#005440';
+            return this.theme === 'dark' ? '#fff' : '#515a6e';
         }
     },
     methods: {

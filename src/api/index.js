@@ -102,3 +102,9 @@ export const saveImages=(params)=>{
 export const delImagesItem=(params)=>{
     return getRequest('/base/front/item/action/del/'+params);
 };
+export const queryDictTypes=(params)=>{
+    return postRequest('/dict/api/dict/types?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex,params);
+};
+export const queryDictItems=(params)=>{
+    return postRequest('/dict/api/dict/entrties?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex,params);
+};
