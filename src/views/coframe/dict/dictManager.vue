@@ -30,7 +30,7 @@
                 <Col span="12">
                     <Card>
                         <Row>
-                            <Button @click="handleAdd">增加</Button>
+                            <Button @click="handleItemAdd">增加</Button>
                         </Row>
                         <Row>
                             <Table :columns="dictColumn" :data="dictData"></Table>
@@ -42,12 +42,44 @@
                 </Col>
             </Row>
         </Card>
+        <Modal v-model="showDictTypeForm" :title="typeFormTitle" @on-ok="saveTypeFrom">
+            <Form :model="dictTypeFrom" :label-width="80">
+                <FormItem label="类型编码：">
+                    <Input v-model="dictTypeFrom.dictTypeId" ></Input>
+                </FormItem>
+                <FormItem label="类型名称：">
+                    <Input v-model="dictTypeFrom.dictTypeName"></Input>
+                </FormItem>
+            </Form>
+        </Modal>
+        <Modal v-model="showDictItemForm" :title="itemFormTitle" @on-ok="saveItemFrom">
+            <Form :model="dictItemFrom" :label-width="90">
+                <FormItem label="类型编码：">
+                    <Input v-model="dictItemFrom.dictTypeId" ></Input>
+                </FormItem>
+                <FormItem label="字典项代码：">
+                    <Input v-model="dictItemFrom.dictId"></Input>
+                </FormItem>
+                <FormItem label="字典项名称：">
+                    <Input v-model="dictItemFrom.dictName"></Input>
+                </FormItem>
+                <FormItem label="排序值：">
+                    <InputNumber v-model="dictItemFrom.sortNo"></InputNumber>
+                </FormItem>
+            </Form>
+        </Modal>
     </div>
 </template>
 
 <script>
     import{queryDictTypes,
-        queryDictItems
+        queryDictItems,
+        saveAddTypeFrom,
+        saveUpTypeFrom,
+        delDictType,
+        saveAddDictItem,
+        saveUpdateDictItem,
+        delDictItem
     } from '@/api/index';
     export default {
         name: "dictManager",
@@ -58,6 +90,12 @@
                     pageIndex:1,
                     pageSize: 10
                 },
+                showDictTypeForm: false,
+                typeFormTitle:"",
+                typeFromType:"",
+                showDictItemForm: false,
+                itemFormTitle: '',
+                itemFromType:'',
                 dictTypeColumn:[
                     {
                         title: '类型代码',
@@ -81,7 +119,7 @@
                                             },
                                             on: {
                                                 click: () => {
-                                                    this.handleUpdateType(params.row.tlrno);
+                                                    this.handleUpdateType(params.row);
                                                 }
                                             }
                                         },
@@ -93,7 +131,7 @@
                                             },
                                             on: {
                                                 click: () => {
-                                                    this.remove(params.row.tlrno);
+                                                    this.remove(params.row);
                                                 }
                                             }
                                         },
@@ -133,7 +171,7 @@
                                             },
                                             on: {
                                                 click: () => {
-                                                    this.handleUpdateType(params.row.tlrno);
+                                                    this.handleUpdateItem(params.row);
                                                 }
                                             }
                                         },
@@ -145,7 +183,7 @@
                                             },
                                             on: {
                                                 click: () => {
-                                                    this.remove(params.row.tlrno);
+                                                    this.removeItem(params.row);
                                                 }
                                             }
                                         },
@@ -161,7 +199,10 @@
                     pageIndex:1,
                     pageSize: 10
                 },
-                dictItemsTotal:0
+                dictItemsTotal:0,
+                dictTypeFrom:{},
+                dictItemFrom:{},
+                dictTypeSelected:{}
             }
         },
         methods:{
@@ -178,16 +219,30 @@
                 };
             },
             handleUpdateType(dictType){
-
+                this.dictTypeFrom = dictType;
+                this.showDictTypeForm = true;
+                this.typeFormTitle = "数据字典类型修改";
+                this.typeFromType = 'UPDATE';
             },
             remove(dictType){
-
+                let arrays = [];
+                arrays.push(dictType)
+                delDictType(arrays).then(res=>{
+                    this.$Notice.success({
+                        title: '删除成功',
+                        desc: ''
+                    });
+                    this.handleSearch();
+                });
             },
             pageChange(pageIndex){
                 this.searchForm.pageIndex = pageIndex;
                 this.handleSearch();
             },
             handleAdd(){
+                this.showDictTypeForm = true;
+                this.typeFormTitle = "数据字典类型新增";
+                this.typeFromType = 'ADD';
 
             },
             dictTypeRowClick(row,index){
@@ -195,6 +250,7 @@
                     pageIndex:1,
                     pageSize: 10
                 };
+                this.dictTypeSelected = row;
                 this.dictItemSearchForm.dictTypeId = row.dictTypeId;
                 queryDictItems(this.dictItemSearchForm).then(res=>{
                     this.dictData=res.data.data;
@@ -206,6 +262,84 @@
                 queryDictItems(row.dictTypeId).then(res=>{
                     this.dictData=res.data.data;
                     this.dictItemsTotal= res.data.total;
+                });
+            },
+            handleItemAdd(){
+                this.showDictItemForm =  true;
+                this.itemFormTitle = "增加字典项";
+                this.dictItemFrom ={};
+                this.dictItemFrom.dictTypeId= this.dictTypeSelected.dictTypeId;
+                this.itemFromType = 'ADD';
+
+            },
+            saveTypeFrom(){
+                if (this.typeFromType ==='ADD'){
+                    saveAddTypeFrom(this.dictTypeFrom).then(res=>{
+                        this.$Notice.success({
+                            title: '添加成功',
+                            desc: ''
+                        });
+                        this.showDictTypeForm = false;
+                        this.handleSearch();
+                    });
+                }else{
+                    saveUpTypeFrom(this.dictTypeFrom).then(res=>{
+                        this.$Notice.success({
+                            title: '修改成功',
+                            desc: ''
+                        });
+                        this.showDictTypeForm = false;
+                        this.handleSearch();
+                    })
+                }
+            },
+            saveItemFrom(){
+                if (this.itemFromType==='ADD'){
+                    saveAddDictItem(this.dictItemFrom).then(res=>{
+                        this.$Notice.success({
+                            title: '添加成功',
+                            desc: ''
+                        });
+                        this.showDictItemForm = false;
+                        this.dictItemSearchForm.dictTypeId = this.dictTypeSelected.dictTypeId;
+                        queryDictItems(this.dictItemSearchForm).then(res=>{
+                            this.dictData=res.data.data;
+                            this.dictItemsTotal= res.data.total;
+                        });
+                    });
+                }else {
+                    saveUpdateDictItem(this.dictItemFrom).then(res=>{
+                        this.$Notice.success({
+                            title: '修改成功',
+                            desc: ''
+                        });
+                        this.showDictItemForm = false;
+                        this.dictItemSearchForm.dictTypeId = this.dictTypeSelected.dictTypeId;
+                        queryDictItems(this.dictItemSearchForm).then(res=>{
+                            this.dictData=res.data.data;
+                            this.dictItemsTotal= res.data.total;
+                        });
+                    });
+                }
+            },
+            handleUpdateItem(item){
+                this.dictItemFrom = item;
+                this.showDictItemForm = true;
+                this.itemFromType = "UPDATE";
+            },
+            removeItem(item){
+                let array = [];
+                array.push(item);
+                delDictItem(array).then(res=>{
+                    this.dictItemSearchForm.dictTypeId = this.dictTypeSelected.dictTypeId;
+                    queryDictItems(this.dictItemSearchForm).then(res=>{
+                        this.$Notice.success({
+                            title: '删除成功',
+                            desc: ''
+                        });
+                        this.dictData=res.data.data;
+                        this.dictItemsTotal= res.data.total;
+                    });
                 });
             }
 

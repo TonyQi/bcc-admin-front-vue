@@ -108,3 +108,21 @@ export const queryDictTypes=(params)=>{
 export const queryDictItems=(params)=>{
     return postRequest('/dict/api/dict/entrties?pageSize='+params.pageSize +"&pageIndex="+params.pageIndex,params);
 };
+export const saveAddTypeFrom=(params)=>{
+    return postRequest('/dict/api/dict/type/actions/add',params);
+};
+export const saveUpTypeFrom=(params)=>{
+    return postRequest('/dict/api/dict/types/actions/up',params);
+};
+export const delDictType=(params)=>{
+    return postRequest('/dict/api/dicts/types/actions/del',params);
+};
+export const saveAddDictItem=(params)=>{
+    return postRequest('/dict/api/dict/entrties/actions/add',params);
+};
+export const saveUpdateDictItem=(params)=>{
+    return postRequest('/dict/api/dict/entrties/actions/up',params);
+};
+export const delDictItem=(params)=>{
+    return postRequest('/dict/api/dict/entrties/actions/del',params);
+};
